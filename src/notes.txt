@@ -1,0 +1,3 @@
+Links: 
+*   https://stackoverflow.com/questions/17330139/python-printing-a-dictionary-as-a-horizontal-table-with-headers
+*   https://www.youtube.com/watch?v=Ko7BChxlAFU&list=PL7sWxFnBVJLXZdk6_kPjcfOJBT-H1VSG1&index=19
