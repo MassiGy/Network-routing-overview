@@ -1,0 +1,6 @@
+* add a filename argument to represent_network procedure
+* add a cycle check for the path finding and the routing tables
+* add a mechanism that marks a missing router as a (-1,infinity) router so as the Bellman-Ford algorithm
+  do not count it as it was alive.
+  
+* refactor

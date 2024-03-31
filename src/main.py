@@ -1,16 +1,18 @@
 """
+    @author: Massiles Ghernaout (github.com/MassiGy)
+
     We need to represent a network of routers and machines connected to these routers.
     So the main entities that we have to deal with are: 
         - router
         - normal machine ( like a computer )
 
     Each router contains: 
-        - list of interfaces
+        - list of interfaces (optional)
         - list of nieghbors
         - routing table
     
     Each normal machine contains: 
-        - list of interfaces
+        - list of interfaces (optional)
         - list of routers in the nieghborhood.
         - connections list ( other machines that we've previously talked to )
 
@@ -49,76 +51,80 @@
 
 """
 
+########################################################################
+####################### Program globals    #############################
+########################################################################
+
 # declare our routers   ( seed data )
 routers:list[dict] = [
     {
         "id": 0,
         "type": "router",
-        "interfaces": ["eth0", "eth1", "wlo1"],
+        # "interfaces": ["eth0", "eth1", "wlo1"],
         "nieghbors": [(1, 1), (2,2)],
         "routing_table": {}
     },
     {
         "id": 1,
         "type": "router",
-        "interfaces": ["eth0", "wlo1"],
+        # "interfaces": ["eth0", "wlo1"],
         "nieghbors": [(0, 1), (2,2),(3,3), (4,1)],
         "routing_table": {}
     },
     {
         "id": 2,
         "type": "router",
-        "interfaces": ["eth0", "eth1"],
+        # "interfaces": ["eth0", "eth1"],
         "nieghbors": [(0, 2), (1,2), (4,3)],
         "routing_table": {}
     },
     {
         "id": 3,
         "type": "router",
-        "interfaces": ["eth0", "eth1"],
+        # "interfaces": ["eth0", "eth1"],
         "nieghbors": [(1, 3), (4,1),(5,1)],
         "routing_table": {}
     },
     {
         "id": 4,
         "type": "router",
-        "interfaces": ["eth0", "eth1"],
+        # "interfaces": ["eth0", "eth1"],
         "nieghbors": [(1,1), (2,3), (3,1),(5,3)],
         "routing_table": {}
     },
     {
         "id": 5,
         "type": "router",
-        "interfaces": ["eth0", "eth1"],
+        # "interfaces": ["eth0", "eth1"],
         "nieghbors": [(3, 1), (4,3)],
         "routing_table": {}
     }
 ]
 
 
-# declare our machines 
+# declare our machines (optional)
 machines:list[dict]= [
-    # {
-    #     "id": 1,
-    #     "type": "machine",
-    #     "interfaces": ["wlo1"],
-    #     "nieghbors": [1],
-    #     "prev_connections": []     
-    # },
-    # {
-    #     "id": 2,
-    #     "type": "machine",
-    #     "interfaces": ["eth0"],
-    #     "nieghbors": [0],
-    #     "prev_connections": []     
-    # },
-    # {
-    #     "id": 3,
-    #     "type": "machine",
-    #     "interfaces": ["eth0"],
-    #     "nieghbors": [2],
-    #     "prev_connections": []     
-    # }
+    {
+        "id": 1,
+        "type": "machine",
+        # "interfaces": ["wlo1"],
+        "nieghbors": [1],
+        "prev_connections": []     
+    },
+    {
+        "id": 2,
+        "type": "machine",
+        # "interfaces": ["eth0"],
+        "nieghbors": [0],
+        "prev_connections": []     
+    },
+    {
+        "id": 3,
+        "type": "machine",
+        # "interfaces": ["eth0"],
+        "nieghbors": [2],
+        "prev_connections": []     
+    }
 ]
 
 # declare our network
@@ -126,9 +132,15 @@ network:tuple[list[dict], list[dict]] = (routers, machines)
 
 
 
+########################################################################
+####################### Program procedures #############################
+########################################################################
+
 # declare a procedure for representing the network
 def represent_network(network:tuple[routers: list[dict], machines: list[dict]], tohighlight:list[(int, int)]=[]) -> None:
     """ 
+        @author: Massiles Ghernaout (github.com/MassiGy)
+
         we are going to write the network presentation to a file,
         we are going to use the xdot markup language to represent the mesh-like network.
         the filename will be network.dot, and can be viewed using "$ xdot network.dot ".
@@ -183,6 +195,14 @@ def represent_network(network:tuple[routers: list[dict], machines: list[dict]], 
 # declare a procedure to calculate our routing tables
 def setup_routing_tables(routers:list[dict])-> None: 
     """ 
+        @author: Massiles Ghernaout (github.com/MassiGy)
+
+        NOTE: I've been able to write this algorithm from scratch 
+        thanks to Pr. Geoffrey Messier and his lecture about Routing
+        Algorithms.
+        Link: https://www.youtube.com/watch?v=Ko7BChxlAFU&list=PL7sWxFnBVJLXZdk6_kPjcfOJBT-H1VSG1&index=19
+
+
         we are going to iterate through the routers list, and foreach 
         router we are going to setup the routing table.
 
@@ -203,6 +223,12 @@ def setup_routing_tables(routers:list[dict])-> None:
           iteration pass, iterate over again from the start.
         
         - do this for every router out there as a destination. 
+
+        NOTE: The only issue with this algorithm is that it does not indicate 
+        the list of fallback routers to use if the primary (best next hop) one
+        is down. So as Pr. Geoffrey Messier pointed out in the video, the algorithm
+        should be re-executed periodicaly to keep the routing table reliable, thus
+        making the routing and the network self-healing.
     """
 
     if len(routers) == 0: 
@@ -246,15 +272,13 @@ def setup_routing_tables(routers:list[dict])-> None:
                 )
             )
 
-
-
         for _ in routers: 
             # we iterate quadratically since at the end of a cycle of iterations, 
             # we can end up with routers that do not know how to reach the destination
             # since they need to wait for thier nieghbors to know that informations first. 
             # Besides, iterating quadratically can optimize the routing tables, since we can 
             # have a situation where a router find out that one of its nieghbors has a better
-            # cost then its own, since its own cost was calculated earlier. 
+            # cost compared to its own, since its own cost was calculated earlier. 
 
             for r in routers: 
                 if r == destination: 
@@ -267,8 +291,6 @@ def setup_routing_tables(routers:list[dict])-> None:
                 start = r
                 nieghbors = start["nieghbors"]
                 
-                
-
                 for nieghbor in nieghbors: 
                     # nieghbor is a tuple of (router_id:int, cost:int)
 
@@ -278,9 +300,6 @@ def setup_routing_tables(routers:list[dict])-> None:
 
                     if nieghbor_to_destination_cost == infinity: 
                         continue
-
-
-                    
                     
                     start_to_nieghbor_cost = nieghbor[1]
 
@@ -297,12 +316,20 @@ def setup_routing_tables(routers:list[dict])-> None:
                                 )
                         )
 
-
     return
 
 
 # declare a procedure for finding the best route path
 def find_best_route(routers:list[dict], src:dict, dest:dict)->list[int]:
+    """ 
+        @author: Massiles Ghernaout (github.com/MassiGy)
+
+        Going from the routing tables, it is really easy to 
+        find a path, it is just a matter of jumping from point
+        to point starting from the destination entry in the src 
+        routing table. All ways look for the destination entry, 
+        and follow that router.
+    """
     path = []
 
     if src not in routers or dest not in routers: 
@@ -319,7 +346,17 @@ def find_best_route(routers:list[dict], src:dict, dest:dict)->list[int]:
     
     return path
 
-# program execution 
+
+
+
+
+
+
+
+########################################################################
+####################### Program execution #############################
+########################################################################
+
 represent_network(network=network)
 
 # create the routing tables
