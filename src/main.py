@@ -127,7 +127,7 @@ network:tuple[list[dict], list[dict]] = (routers, machines)
 
 
 # declare a procedure for representing the network
-def represent_network(network:tuple[routers: list[dict], machines: list[dict]]) -> None:
+def represent_network(network:tuple[routers: list[dict], machines: list[dict]], tohighlight:list[(int, int)]=[]) -> None:
     """ 
         we are going to write the network presentation to a file,
         we are going to use the xdot markup language to represent the mesh-like network.
@@ -158,6 +158,10 @@ def represent_network(network:tuple[routers: list[dict], machines: list[dict]]) 
             # nieghbor is a tuple(router_id:int, cost:int)
             content += "\tr_"+str(router["id"]+1) +"->r_"+str(nieghbor[0]+1)
             content += '[label ="'+str(nieghbor[1])+'"]'
+            if (router["id"], nieghbor[0]) in tohighlight: 
+                content += '[color ="red"]'
+
+
             content += ";\n"
         
 
@@ -296,6 +300,25 @@ def setup_routing_tables(routers:list[dict])-> None:
 
     return
 
+
+# declare a procedure for finding the best route path
+def find_best_route(routers:list[dict], src:dict, dest:dict)->list[int]:
+    path = []
+
+    if src not in routers or dest not in routers: 
+        print("source and destination routers should be in the routers list to find a path.")
+
+    path.append(src["id"])
+    
+    curr = src["routing_table"][dest["id"]][0][0]
+    while curr != dest["id"]: 
+        path.append(curr)
+        curr = routers[curr]["routing_table"][dest["id"]][0][0]
+
+    path.append(dest["id"])
+    
+    return path
+
 # program execution 
 represent_network(network=network)
 
@@ -320,6 +343,25 @@ for router in routers:
 
 
         print(entry)
+
+# calculate path from router 1 to 6 
+path = find_best_route(routers=routers, src=routers[0], dest=routers[-1])
+print("Path from router 1 to 6:")
+path_as_str = ""
+for point in path: 
+    path_as_str += "-> "+ str(point+1)
+
+print(path_as_str)
     
+# create the list of the path steps 
+steps:list[(int,int)] = []
+for i in range(len(path)-1):
+    steps.append((path[i], path[i+1]))
+
+
+
+# generate a new file highlighting that path
+represent_network(network=network, tohighlight=steps)
+
 
 

@@ -1,19 +1,19 @@
 digraph network {
-	r_1->r_2[label ="1"];
+	r_1->r_2[label ="1"][color ="red"];
 	r_1->r_3[label ="2"];
 	r_2->r_1[label ="1"];
 	r_2->r_3[label ="2"];
 	r_2->r_4[label ="3"];
-	r_2->r_5[label ="1"];
+	r_2->r_5[label ="1"][color ="red"];
 	r_3->r_1[label ="2"];
 	r_3->r_2[label ="2"];
 	r_3->r_5[label ="3"];
 	r_4->r_2[label ="3"];
 	r_4->r_5[label ="1"];
-	r_4->r_6[label ="1"];
+	r_4->r_6[label ="1"][color ="red"];
 	r_5->r_2[label ="1"];
 	r_5->r_3[label ="3"];
-	r_5->r_4[label ="1"];
+	r_5->r_4[label ="1"][color ="red"];
 	r_5->r_6[label ="3"];
 	r_6->r_4[label ="1"];
 	r_6->r_5[label ="3"];
