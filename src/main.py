@@ -293,18 +293,6 @@ def setup_routing_tables(routers:list[dict])-> None:
                                 )
                         )
 
-                    # # append all then sort
-                    # start["routing_table"][destination["id"]].append(
-                    #         (
-                    #             nieghbor[0],
-                    #             start_to_nieghbor_cost +nieghbor_to_destination_cost
-                    #         )
-                    # )
-                    # # sort by cost in descending order to preserve the algorithm
-                    # start["routing_table"][destination["id"]].sort(key=lambda x:-x[1])
-
-
-
 
     return
 
@@ -324,14 +312,11 @@ for router in routers:
         entry=""
         entry += "\t"+ str(nieghbor_id+1) + ":"
 
-
         # sort by cost
         hops.sort(key=lambda x:x[1])
-        for h in hops:
-            # ignore the infinity cost hop
-            if h[0] == -1:      
-                continue 
-            entry +=" "+str(h[0]+1)
+        
+        # print the best route
+        entry +=" "+str(hops[0][0]+1)
 
 
         print(entry)
