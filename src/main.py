@@ -56,6 +56,9 @@
 ########################################################################
 
 # declare our routers   ( seed data )
+"""
+    NOTE: make sure that the ids of the routers start at 0.
+"""
 routers:list[dict] = [
     {
         "id": 0,
@@ -103,28 +106,31 @@ routers:list[dict] = [
 
 
 # declare our machines (optional)
+"""
+    NOTE: make sure that the ids of the machines start at 0.
+"""
 machines:list[dict]= [
-    {
-        "id": 1,
-        "type": "machine",
-        # "interfaces": ["wlo1"],
-        "nieghbors": [1],
-        "prev_connections": []     
-    },
-    {
-        "id": 2,
-        "type": "machine",
-        # "interfaces": ["eth0"],
-        "nieghbors": [0],
-        "prev_connections": []     
-    },
-    {
-        "id": 3,
-        "type": "machine",
-        # "interfaces": ["eth0"],
-        "nieghbors": [2],
-        "prev_connections": []     
-    }
+    # {
+    #     "id": 1,
+    #     "type": "machine",
+    #     # "interfaces": ["wlo1"],
+    #     "nieghbors": [1],
+    #     "prev_connections": []     
+    # },
+    # {
+    #     "id": 2,
+    #     "type": "machine",
+    #     # "interfaces": ["eth0"],
+    #     "nieghbors": [0],
+    #     "prev_connections": []     
+    # },
+    # {
+    #     "id": 3,
+    #     "type": "machine",
+    #     # "interfaces": ["eth0"],
+    #     "nieghbors": [2],
+    #     "prev_connections": []     
+    # }
 ]
 
 # declare our network
@@ -144,6 +150,8 @@ def represent_network(network:tuple[routers: list[dict], machines: list[dict]], 
         we are going to write the network presentation to a file,
         we are going to use the xdot markup language to represent the mesh-like network.
         the filename will be network.dot, and can be viewed using "$ xdot network.dot ".
+
+        NOTE: make sure that the ids of the routers and the machines start at 0.
     """
 
     # use the w flag to clear the file first
@@ -181,7 +189,7 @@ def represent_network(network:tuple[routers: list[dict], machines: list[dict]], 
     for machine in machines:
         for nieghbor in machine["nieghbors"]: 
             # nieghbor is a router_id:int
-            content += "\tm_"+str(machine["id"]) +"->r_"+str(nieghbor)
+            content += "\tm_"+str(machine["id"]) +"->r_"+str(nieghbor+1)
             content += ";\n"
 
 
