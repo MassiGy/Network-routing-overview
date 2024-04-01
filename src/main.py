@@ -173,16 +173,10 @@ def represent_network(network:tuple[routers: list[dict], machines: list[dict]], 
     content +="digraph network {\n" 
     
 
-    drawn_routers = []
     for router in routers:  
-        drawn_routers.append(router["id"])
         for nieghbor in router["nieghbors"]: 
             # nieghbor is a tuple(router_id:int, cost:int)
-            if nieghbor[0] in drawn_routers:
-                continue
-
             content += "\tr_"+str(router["id"]+1) +"->r_"+str(nieghbor[0]+1)
-            content += ' [dir =both]'
             content += ' [label ="'+str(nieghbor[1])+'"]'
             if (router["id"], nieghbor[0]) in tohighlight: 
                 content += ' [color ="red"]'
